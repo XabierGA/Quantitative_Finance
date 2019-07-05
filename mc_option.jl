@@ -1,4 +1,7 @@
 using Random
+using Plots
+
+plotlyjs()
 
 struct  Option
     stock_price::Float32
@@ -49,18 +52,37 @@ function PayOFF_Calculator(trade::Option , Prices_per_scenario)
 
 end
 
+function plot_scenarios(trade::Option , Prices_Per_Scenario)
+
+    X = [];
+
+    Y = [];
+
+    x_aux = [1,0];
+
+    for price in Prices_Per_Scenario
+        y_aux = []
+        push!(y_aux , price);
+        push!(y_aux , trade.stock_price);
+        push!(Y, y_aux);
+        push!(X , x_aux);
+    end
+    xlabel= "TimeStep (Years)"
+    ylabel= "Payoff"
+    plt = plot(X , Y , xlabel = xlabel , ylabel =ylabel)
+    savefig("sim_results.png")
+end
+    
+
 function MCSimulator(NumberofScenarios , trade::Option)
 
     prices_per_scenario = GBModel(trade , NumberofScenarios);
-
+    plot_scenarios(trade , prices_per_scenario)
     price = PayOFF_Calculator(trade , prices_per_scenario);
 
     return price
 end
         
-
-
-
 #################################
 #################################
 #  First Example                #
@@ -76,7 +98,7 @@ black_scholes_yield = 28.40
 
 trade = Option(stock_price , strike_price, risk_free_rate , volatility , time_to_maturity );
 
-result = MCSimulator(1000000 , trade);
+result = MCSimulator(1000 , trade);
 
 println("Result --_>  "  , result);
 println("Difference with respect to Black-black_scholes_yield ", 100*(result - black_scholes_yield)/black_scholes_yield)

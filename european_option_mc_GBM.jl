@@ -1,3 +1,10 @@
+#=
+Author: Xabier Garcia Andrade
+
+Description: Implementation of a Monte Carlo simulator using 
+a Geometric Brownian Motion Model to price European Options
+=#
+
 using Random
 using Plots
 
@@ -17,7 +24,7 @@ function GBModel(trade::Option , NumberofScenarios)
     #Since we are dealing with European Options (only used at expiration) , we only need one timestep
     timestep = 1;
     for scenario in collect(1:1:NumberofScenarios)
-        rnd = randn(Float32 , 1)[1];
+        rnd = randn(Float32 , 1)[1] * 0.5 + 1;
 
         drift = (trade.risk_free_rate - 0.5*trade.volatility^2)*timestep;
         uncer = trade.volatility*sqrt(timestep)*rnd;
